@@ -1,0 +1,82 @@
+{
+  "dataSource":{
+      "primary_lookUpTable":{
+      "source": {
+        "type": "MySQL",
+        "MySQL":{
+          "address": "localhost",
+          "user": "hipsci",
+          "pwd": "data",
+          "db": "example_data",
+          "table": "Example_Img",
+          "columnNames": ["ImageNumber", "Image_FileName_Phase"],
+          "raw": []
+        },
+        "CSV":{
+          "path":"",
+          "rowOffset":"",
+          "columnNames":[],
+          "isDirectory": false,
+          "fileNameContains": "",
+          "raw": []
+        }
+      },
+      "map":[
+          {"Index": []},
+          {
+              "ExpDate": [0, 8],
+              "Well": [9, 12],
+              "Plate": [12, 14],
+              "Date": [14, 26],
+              "Hour": [26, 29]
+          }
+      ],
+      "invalidCharacters": ["_", "h"],
+      "translationMap": []
+    },
+
+    "annotation_lookUpTable":{
+      "source": {
+        "type": "CSV",
+        "MySQL":{
+          "address": "",
+          "user": "",
+          "pwd": "",
+          "db": "",
+          "table": "",
+          "columnNames": [],
+          "raw": []
+        },
+        "CSV":{
+          "path":"/Users/Kerz/Desktop/",
+          "fileName": "2014-04-24_example_plate_results.txt",
+          "rowOffset": 8,
+          "columnNames":["Cell Type", "Concentration", "Row", "Column"],
+          "isDirectory": false,
+          "fileNames":[],
+          "fileNameContains": "",
+          "raw": ["fileName"]
+        }
+      },
+      "map":[
+          {"Line": []},
+          {"FN": []},
+          {"Well": []},
+          {
+              "Experiment": [11, 18],
+              "ExpDate": [0, 10]
+          }
+      ],
+      "invalidCharacters": ["-", "_"],
+      "translationMap": [
+        {
+          "Row":["Null", "A", "B", "C", "D", "E", "F", "G", "H"],
+          "Column":[]
+        }
+      ]
+    }
+  },
+  "production": true,
+  "timeDimensionColName": "Hour",
+  "indexHierarchy": ["Experiment", "Line", "FN", "Hour"]
+}
