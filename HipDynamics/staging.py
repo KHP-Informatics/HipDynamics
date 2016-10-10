@@ -15,6 +15,7 @@ class LookUpTable:
         self.invalidCharacters =[]
         self.TIMEKEY = "TIME_DIMENSION"
         self.timeDimensionKey = ""
+        self.indexGroupIteratorIdx = 0
 
     @property
     def invalidCharacters(self):
@@ -67,6 +68,19 @@ class LookUpTable:
     @timeDimensionKey.setter
     def timeDimensionKey(self, input):
         self.__timeDimensionKey = input
+
+    @property
+    def indexGroupIteratorKey(self):
+        return self.__indexGroupIteratorKey
+
+    @indexGroupIteratorKey.setter
+    def indexGroupIteratorKey(self, input):
+        if input == self.timeDimensionKey:
+            input = self.TIMEKEY
+        self.__indexGroupIteratorKey = input
+        self.indexGroupIteratorIdx = 0
+        print("\nLookUpTable Iterator Key\n========================\n"\
+              "[√] \'{}\' set as index group selector for analysis.".format(input))
 
     def mapTable(self):
         for i in range(self.mappingInputN):
@@ -240,8 +254,6 @@ class LookUpTable:
     def checkForIndexHierarchy(self):
         if len(self.indexHierarchy) == 0:
             print("[ERROR] You need to provide an index hierarchy to index this table.\n"\
-                  "        NOTE: with every indexTable(), the index hierarchy is consumed" \
-                  "        and must be reassigned in order to index the table again.\n" \
                   "        Please consult the documentation for more information.")
             sys.exit()
 
@@ -273,6 +285,20 @@ class LookUpTable:
     def indexSummary(self):
         for i in range(len(self.indexHierarchy)):
             print("[√] {} (n = {})".format(self.indexHierarchy[i], str(len(self.index[self.indexHierarchy[i]]))))
+
+    def nextSourceIndexGroup(self):
+        idxs = self.nextIndexGroup()
+        sourceIdxs = []
+        for i in range(len(idxs)):
+            sourceIdxs.append(self.table["Index"][idxs[i]])
+        return sourceIdxs
+
+    def nextIndexGroup(self):
+        if len(self.index[self.indexGroupIteratorKey]) > self.indexGroupIteratorIdx:
+            idxGroup = self.index[self.indexGroupIteratorKey][self.indexGroupIteratorIdx]
+            self.indexGroupIteratorIdx = self.indexGroupIteratorIdx + 1
+            return idxGroup
+        return []
 
     def __str__(self):
         if(self.mappingInputN != 0):
@@ -465,8 +491,11 @@ class TableSetup:
         self.table.cleanMissingness()
         self.table.indexHierarchy = self.pref["indexHierarchy"]
         self.table.indexTable()
+        self.table.indexGroupIteratorKey = self.pref["indexIteratorSelector"]
+        self.table.sourceFeaturePatternSelector = self.pref["sourceFeaturePatternSelector"]
         if not self.pref["production"]:
             print(self.table)
+        print("\n*** SETUP SUCCESSFUL ***\n")
 
     def checkPreferences(self):
         print("\nHipDynamics Setup Check\n=======================")
@@ -475,6 +504,8 @@ class TableSetup:
         self.evalKeyCheck(keys, "production")
         self.evalKeyCheck(keys, "timeDimensionColName")
         self.evalKeyCheck(keys, "indexHierarchy")
+        self.evalKeyCheck(keys, "indexIteratorSelector")
+        self.evalKeyCheck(keys, "sourceFeaturePatternSelector")
         keysSetup = list(self.pref["dataSource"].keys())
         self.evalKeyCheck(keysSetup, "primary_lookUpTable")
         keysTable = list(self.pref["dataSource"]["primary_lookUpTable"].keys())
@@ -484,6 +515,8 @@ class TableSetup:
         typeSourceKey = self.pref["dataSource"]["primary_lookUpTable"]["source"]["type"]
         self.evalKeyCheck(keysSource, typeSourceKey)
         self.evalKeyCheck(keysTable, "map")
+        indexKey = list(self.pref["dataSource"]["primary_lookUpTable"]["map"][0].keys())
+        self.evalKeyCheck(indexKey, "Index")
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
         self.evalKeyCheck(keysSetup, "annotation_lookUpTable")

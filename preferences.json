@@ -11,14 +11,6 @@
           "table": "Example_Img",
           "columnNames": ["ImageNumber", "Image_FileName_Phase"],
           "raw": []
-        },
-        "CSV":{
-          "path":"",
-          "rowOffset":"",
-          "columnNames":[],
-          "isDirectory": false,
-          "fileNameContains": "",
-          "raw": []
         }
       },
       "map":[
@@ -38,15 +30,6 @@
     "annotation_lookUpTable":{
       "source": {
         "type": "CSV",
-        "MySQL":{
-          "address": "",
-          "user": "",
-          "pwd": "",
-          "db": "",
-          "table": "",
-          "columnNames": [],
-          "raw": []
-        },
         "CSV":{
           "path":"/Users/Kerz/Desktop/",
           "fileName": "2014-04-24_example_plate_results.txt",
@@ -67,16 +50,18 @@
               "ExpDate": [0, 10]
           }
       ],
-      "invalidCharacters": ["-", "_"],
       "translationMap": [
         {
           "Row":["Null", "A", "B", "C", "D", "E", "F", "G", "H"],
           "Column":[]
         }
-      ]
+      ],
+      "invalidCharacters": ["-", "_"]
     }
   },
   "production": true,
   "timeDimensionColName": "Hour",
-  "indexHierarchy": ["Experiment", "Line", "FN", "Hour"]
+  "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
+  "indexIteratorSelector": "Hour",
+  "sourceFeaturePatternSelector": "CellsDoubleFinal2"
 }

@@ -2,7 +2,7 @@
 # For experiment
 #   For line
 #       Select for [FN] or Well
-#       Get 'CellsDoubleFinal2' fields
+#       Get 'CellsDoubleFinal2' fields *** Start from here ***
 #
 #       Sort according to hours
 #       1. Heatmapping
@@ -15,3 +15,15 @@
 #           2.4 Get gradient and y-intercept
 #           2.5 Plot
 #   3. Output csv per experiment
+
+class Analysis:
+
+    def __init__(self):
+        pass
+
+
+class AnalysisWrapper:
+
+    def __init__(self):
+        pass
+

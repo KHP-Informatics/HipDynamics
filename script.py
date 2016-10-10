@@ -8,4 +8,8 @@ def main():
     tbs.setup()
     table = tbs.table
 
+    for i in range(24):
+        idx = table.nextSourceIndexGroup()
+        print(str(idx))
+
 main()
