@@ -33,6 +33,7 @@
         "CSV":{
           "path":"/Users/Kerz/Documents/projects/HIPSCI/Plate_Results",
           "fileName": "",
+          "delimiter": "\t",
           "rowOffset": 8,
           "columnNames":["Cell Type", "Concentration", "Row", "Column"],
           "isDirectory": true,

@@ -11,6 +11,7 @@ import pymysql as pymysql
 class LookUpTable:
     def __init__(self):
         self.table = {}
+        self.index = {}
         self.mapping = []
         self.mappingInputN = 0
         self.invalidCharacters =[]
@@ -277,15 +278,13 @@ class LookUpTable:
             sys.exit()
 
     def setupIndex(self):
-        self.index = {}
         for indexKey in self.indexHierarchy:
             self.index[indexKey] = []
 
     def indexNextKey(self, idxs, keys, keyIndex = 0):
         indexKey = keys[keyIndex]
-        print(indexKey)
         values = self.getValuesAtIdxsWithKey(idxs, indexKey)
-        uniqueValues = numpy.unique(values)
+        uniqueValues = self.getUnsortedUniqueValues(values)
         for val in uniqueValues:
             singleValueIdxs = []
             for i in range(len(idxs)):
@@ -295,6 +294,13 @@ class LookUpTable:
             if (len(keys)-1) > keyIndex:
                 idx = keyIndex + 1
                 self.indexNextKey(singleValueIdxs, keys, idx)
+
+    def getUnsortedUniqueValue(self, values):
+        npValues = numpy.array(values)
+        npUniqueIdxs = numpy.unique(npValues, return_index=True)[1]
+        npUniqueValues = npValues[numpy.sort(npUniqueIdxs)]
+        uniqueValues = npUniqueValues.tolist()
+        return uniqueValues
 
     def getValuesAtIdxsWithKey(self, idxs, key):
         vals = []
@@ -385,18 +391,19 @@ class LookUpTableWrapper:
             "table": table
         }
 
-    def setDataSourceToCSV(self, path, rowOffset = 0):
+    def setDataSourceToCSV(self, path, rowOffset = 0, delimiter=","):
         self.dataSource["source"] = "csv"
         self.dataSource["csv"] = {
             "path": path,
-            "rowOffset": rowOffset
+            "rowOffset": rowOffset,
+            "delimiter": delimiter
         }
 
     def populateTable(self, headers, rawData = []):
         if self.dataSource["source"] == "mysql":
             self.populateTableFromMysql(headers, rawData)
         if self.dataSource["source"] == "csv":
-            self.populateTableFromCSV(headers, rawData)
+            self.populateTableFromCSV(headers, rawData, self.dataSource["csv"]["delimiter"])
 
     def populateTableFromMysql(self, headers, rawData = []):
         query = self.createQuery(headers)
@@ -421,11 +428,11 @@ class LookUpTableWrapper:
         query = query[:-2] + " from {};".format(self.dataSource["mysql"]["table"])
         return query
 
-    def populateTableFromCSV(self, headers, rawData = []):
+    def populateTableFromCSV(self, headers, rawData = [], delimiter = ","):
         with codecs.open(self.dataSource["csv"]["path"], "r", encoding='utf-8', errors='ignore') as inputFile:
             for i in range(self.dataSource["csv"]["rowOffset"]):
                 next(inputFile)
-            data = csv.DictReader(inputFile, delimiter = "\t")
+            data = csv.DictReader(inputFile, delimiter=delimiter)
             for result in data:
                 row = []
                 for key in headers:
@@ -509,10 +516,7 @@ class TableSetup:
             annoTable = self.setupLookUpTable("annotation_lookUpTable")
             self.table.annotateWith(annoTable)
         self.table.assignTimeDimension(self.pref["timeDimensionColName"])
-
         self.table.cleanMissingness()
-        if not self.pref["production"]:
-            print(self.table)
         self.table.indexHierarchy = self.pref["indexHierarchy"]
         self.table.indexTable()
         self.table.indexGroupIteratorKey = self.pref["indexIteratorSelector"]
@@ -523,6 +527,7 @@ class TableSetup:
         print("\n*** SETUP SUCCESSFUL ***\n")
 
     def checkPreferences(self):
+        assumptions = ""
         print("\nHipDynamics Setup Check\n=======================")
         keys = list(self.pref.keys())
         self.evalKeyCheck(keys, "dataSource")
@@ -540,8 +545,8 @@ class TableSetup:
         typeSourceKey = self.pref["dataSource"]["primary_lookUpTable"]["source"]["type"]
         self.evalKeyCheck(keysSource, typeSourceKey)
         self.evalKeyCheck(keysTable, "map")
-        indexKey = list(self.pref["dataSource"]["primary_lookUpTable"]["map"][0].keys())
-        self.evalKeyCheck(indexKey, "Index")
+        mapDicts = list(self.pref["dataSource"]["primary_lookUpTable"]["map"])
+        self.evalArrDictKeyCheck(mapDicts, "Index")
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
         self.evalKeyCheck(keysSetup, "annotation_lookUpTable")
@@ -550,14 +555,25 @@ class TableSetup:
         keysSource = list(self.pref["dataSource"]["annotation_lookUpTable"]["source"].keys())
         self.evalKeyCheck(keysSource, "type")
         typeSourceKey = self.pref["dataSource"]["annotation_lookUpTable"]["source"]["type"]
-        self.evalKeyCheck(keysSource, typeSourceKey)
-        self.evalKeyCheck(keysTable, "map")
+        if typeSourceKey != None:
+            self.evalKeyCheck(keysSource, typeSourceKey)
+            self.evalKeyCheck(keysTable, "map")
+        else:
+            assumptions += "[WARN] The following assumptions have been made from your preference file:\n" \
+                           "       [1] No annotation source was found. All relevant information for indexing\n" \
+                           "           are contained in the primary LookUpTable.\n"
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
         self.evalKeyCheck(keysSetup, "analysis_source")
         typeSourceKey = self.pref["dataSource"]["analysis_source"]["source"]["type"]
-        keysSource = list(self.pref["dataSource"]["analysis_source"]["source"].keys())
-        self.evalKeyCheck(keysSource, typeSourceKey)
+        if typeSourceKey != None:
+            keysSource = list(self.pref["dataSource"]["analysis_source"]["source"].keys())
+            self.evalKeyCheck(keysSource, typeSourceKey)
+        else:
+            assumptions += "       [2] No analysis source was found. All relevant information for analysis\n" \
+                           "           are contained in the primary LookUpTable.\n"
+        if assumptions != "":
+            print(assumptions)
         print("PASS.")
 
     def setupLookUpTable(self, lookUpTableSelector):
@@ -574,7 +590,8 @@ class TableSetup:
                                          sourceSpecs["user"], sourceSpecs["pwd"],
                                          sourceSpecs["db"], sourceSpecs["table"])
         if sourceType == "CSV":
-            wrapper.setDataSourceToCSV((sourceSpecs["path"] + sourceSpecs["fileName"]), sourceSpecs["rowOffset"])
+            wrapper.setDataSourceToCSV((sourceSpecs["path"] + sourceSpecs["fileName"]),
+                                       sourceSpecs["rowOffset"], sourceSpecs["delimiter"])
         wrapper = self.populateTableHelper(wrapper, sourceSpecs, sourceType)
         table = wrapper.table
         if not self.pref["production"]:
@@ -591,11 +608,12 @@ class TableSetup:
                     sourceSpecs["fileName"] = fileName
                     raw = self.evalRaw(sourceSpecs)
                     wrapper.setDataSourceToCSV((sourceSpecs["path"] + "/" + sourceSpecs["fileName"]),
-                                               sourceSpecs["rowOffset"])
+                                               sourceSpecs["rowOffset"], sourceSpecs["delimiter"])
                     wrapper.populateTable(sourceSpecs["columnNames"], raw)
             else:
                 raw = self.evalRaw(sourceSpecs)
-                wrapper.setDataSourceToCSV((sourceSpecs["path"] + "/" + sourceSpecs["fileName"]), sourceSpecs["rowOffset"])
+                wrapper.setDataSourceToCSV((sourceSpecs["path"] + "/" + sourceSpecs["fileName"]),
+                                           sourceSpecs["rowOffset"], sourceSpecs["delimiter"])
                 wrapper.populateTable(sourceSpecs["columnNames"], raw)
         if sourceType == "MySQL":
             wrapper.setDataSourceToMySQL(sourceSpecs["address"],
@@ -606,8 +624,9 @@ class TableSetup:
 
     def evalRaw(self, sourceSpecs):
         keys = list(sourceSpecs.keys())
-        if self.checkForKey(keys, sourceSpecs["raw"][0]) and len(sourceSpecs["raw"]) == 1:
-            return [sourceSpecs[sourceSpecs["raw"][0]]]
+        if len(sourceSpecs["raw"]) == 1:
+            if self.checkForKey(keys, sourceSpecs["raw"][0]):
+                return [sourceSpecs[sourceSpecs["raw"][0]]]
         return sourceSpecs["raw"]
 
     def filterForStringsContainingX(self, strings, stringX):
@@ -618,6 +637,15 @@ class TableSetup:
                     filtered.append(string)
             return filtered
         return strings
+
+    def evalArrDictKeyCheck(self, arrDict, key):
+        evalKeys = list(arrDict[0].keys())
+        for d in arrDict:
+            keys = list(d.keys())
+            check = self.checkForKey(keys, key)
+            if check:
+                evalKeys = keys
+        self.evalKeyCheck(evalKeys, key)
 
 
     def evalKeyCheck(self, arr, key):

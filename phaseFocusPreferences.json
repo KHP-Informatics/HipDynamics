@@ -1,0 +1,45 @@
+{
+  "dataSource":{
+      "primary_lookUpTable":{
+      "source": {
+        "type": "CSV",
+        "CSV":{
+          "path":"/Users/Kerz/Desktop",
+          "fileName": "ExampleFeatureTable_MaxKerz-KCL.csv",
+          "delimiter": "\t",
+          "rowOffset": 0,
+          "columnNames":["Frame", "Lineage ID", "Tracking ID"],
+          "isDirectory": false,
+          "fileNames":[],
+          "fileNameContains": "HipSci",
+          "raw": []
+        }
+      },
+      "map":[
+          {"Frame": []},
+          {"Lineage": []},
+          {"Index": []}
+      ],
+      "invalidCharacters": [],
+      "translationMap": []
+    },
+    "annotation_lookUpTable":{
+      "source": {
+        "type": null
+      },
+      "map":[],
+      "translationMap": [],
+      "invalidCharacters": []
+    },
+    "analysis_source": {
+      "source": {
+        "type": null
+      }
+    }
+  },
+  "production": false,
+  "timeDimensionColName": "Frame",
+  "indexHierarchy": ["Lineage", "Frame"],
+  "indexIteratorSelector": "Frame",
+  "sourceFeaturePatternSelector": ""
+}
