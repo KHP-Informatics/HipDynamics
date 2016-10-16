@@ -295,7 +295,7 @@ class LookUpTable:
                 idx = keyIndex + 1
                 self.indexNextKey(singleValueIdxs, keys, idx)
 
-    def getUnsortedUniqueValue(self, values):
+    def getUnsortedUniqueValues(self, values):
         npValues = numpy.array(values)
         npUniqueIdxs = numpy.unique(npValues, return_index=True)[1]
         npUniqueValues = npValues[numpy.sort(npUniqueIdxs)]
@@ -484,11 +484,12 @@ class LookUpTableWrapper:
 
 class TableSetup:
 
-    def __init__(self):
-        self.path = ""
-        self.pref = {}
-
     def __init__(self, preferencePath):
+        self.assumptions = "[WARN] The following assumptions have been made from your preference file:\n"
+        self.hasAssumptions = False
+        self.assumptionNo = 0
+        self.hasIndex = True
+        self.pref = {}
         self.path = preferencePath
         with open(preferencePath) as data:
             self.pref = json.load(data)
@@ -527,7 +528,6 @@ class TableSetup:
         print("\n*** SETUP SUCCESSFUL ***\n")
 
     def checkPreferences(self):
-        assumptions = ""
         print("\nHipDynamics Setup Check\n=======================")
         keys = list(self.pref.keys())
         self.evalKeyCheck(keys, "dataSource")
@@ -559,9 +559,8 @@ class TableSetup:
             self.evalKeyCheck(keysSource, typeSourceKey)
             self.evalKeyCheck(keysTable, "map")
         else:
-            assumptions += "[WARN] The following assumptions have been made from your preference file:\n" \
-                           "       [1] No annotation source was found. All relevant information for indexing\n" \
-                           "           are contained in the primary LookUpTable.\n"
+            self.addAssumption("No annotation source was found. All relevant information for indexing" \
+                           "are contained in the primary LookUpTable.")
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
         self.evalKeyCheck(keysSetup, "analysis_source")
@@ -570,11 +569,17 @@ class TableSetup:
             keysSource = list(self.pref["dataSource"]["analysis_source"]["source"].keys())
             self.evalKeyCheck(keysSource, typeSourceKey)
         else:
-            assumptions += "       [2] No analysis source was found. All relevant information for analysis\n" \
-                           "           are contained in the primary LookUpTable.\n"
-        if assumptions != "":
-            print(assumptions)
+            self.addAssumption("No analysis source was found. All relevant information for analysis"\
+                               " are contained in the primary LookUpTable.")
+        if self.hasAssumptions:
+            print(self.assumptions)
         print("PASS.")
+
+    def addAssumption(self, msg):
+        self.hasAssumptions = True
+        self.assumptionNo = self.assumptionNo + 1
+        self.assumptions += "   [{}] ".format(self.assumptionNo)
+        self.assumptions += "{}\n".format(msg)
 
     def setupLookUpTable(self, lookUpTableSelector):
         table = LookUpTable()
@@ -650,12 +655,14 @@ class TableSetup:
 
     def evalKeyCheck(self, arr, key):
         check = self.checkForKey(arr, key)
-        if not check:
+        if not check and key != "Index":
             print("[X]: The key \'{}\' was not found in the specified\n"\
                   "     preference file. Please consult the documentation.\nFAIL.".format(key))
             sys.exit()
-        else:
-            print("[√]: Key \'{}\' found.".format(key))
+        if not check and key == "Index":
+            self.addAssumption("Index in LookUpTable was not defined. A row index is created automatically.")
+            self.hasIndex = False
+        print("[√]: Key \'{}\' found.".format(key))
 
     def checkForKey(self, arr, key):
         for item in arr:
