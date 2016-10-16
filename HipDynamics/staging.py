@@ -382,6 +382,12 @@ class LookUpTable:
             sourceIdxs.append(self.table["Index"][idxs[i]])
         return sourceIdxs
 
+    def generateLookUpTableMapFromList(self, vals):
+        map = []
+        for val in vals:
+            map.append({val: []})
+        return map
+
     def __str__(self):
         if(self.mappingInputN != 0):
             output = "\nHipDynamics LookUpTable\n=======================\n"
@@ -495,6 +501,7 @@ class LookUpTableWrapper:
                     row.append(result[key])
                 row = self.formatRow(row, headers)
                 self.table.add(row + rawData)
+            inputFile.close()
 
     def formatRow(self, row, headers):
         if len(self.translationMap) != 0:
@@ -578,7 +585,7 @@ class TableSetup:
         self.table.indexTable()
         self.table.indexGroupIteratorKey = self.pref["indexIteratorSelector"]
         self.table.sourceFeaturePatternSelector = self.pref["sourceFeaturePatternSelector"]
-        self.table.sourceFeatureAccessInfo = self.pref["dataSource"]["analysis_source"]["source"]
+        self.table.sourceFeatureAccessInfo = self.getSourceFeatureAccessInfo()
         if not self.pref["production"]:
             print(self.table)
         print("\n*** SETUP SUCCESSFUL ***\n")
@@ -615,7 +622,7 @@ class TableSetup:
             self.evalKeyCheck(keysSource, typeSourceKey)
             self.evalKeyCheck(keysTable, "map")
         else:
-            self.addAssumption("No annotation source was found. All relevant information for indexing" \
+            self.addAssumption("No annotation source was found. All relevant information for indexing " \
                            "are contained in the primary LookUpTable.")
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
@@ -727,6 +734,12 @@ class TableSetup:
             if item == key:
                 return True
         return False
+
+    def getSourceFeatureAccessInfo(self):
+        dataSource = self.pref["dataSource"]["analysis_source"]["source"]
+        if dataSource["type"] == None:
+            dataSource = self.pref["dataSource"]["primary_lookUpTable"]["source"]
+        return dataSource
 
     def __str__(self):
         info = "\nHipDynamics TableSetup\n======================\n" \

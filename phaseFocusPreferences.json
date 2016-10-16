@@ -11,7 +11,7 @@
           "columnNames":["Frame", "Lineage ID", "Tracking ID"],
           "isDirectory": false,
           "fileNames":[],
-          "fileNameContains": "HipSci",
+          "fileNameContains": "",
           "raw": []
         }
       },

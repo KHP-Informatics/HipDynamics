@@ -41,8 +41,7 @@ class AnalysisWrapper:
             if self.dataSource["type"] == "MySQL":
                 return self.querySelectiveColumnsFromMysql()
             if self.dataSource["type"] == "CSV":
-                #return self.querySelectiveColumnsFromCSV()
-                pass
+                return self.querySelectiveColumnsFromCSV()
         else:
             print("[ERROR] AnalysisWrapper requires a table sourceFeatureAccessInfo.\n" \
                   "        For more information, consult the documentation.")
@@ -71,26 +70,35 @@ class AnalysisWrapper:
                                                                         whereSelector)
         return query
 
+    def querySelectiveColumnsFromCSV(self):
+        csvInfo = self.dataSource["CSV"]
+        path = csvInfo["path"] + "/" + csvInfo["fileName"]
+        with codecs.open(path, "r", encoding='utf-8', errors='ignore') as inputFile:
+            for i in range(csvInfo["rowOffset"]):
+                next(inputFile)
+            data = csv.DictReader(inputFile, delimiter=csvInfo["delimiter"])
+            self.dataInMemory = []
+            for result in data:
+                self.dataInMemory.append(result)
+            inputFile.close()
+        return list(self.dataInMemory[0].keys())
+
     def retrieveDataOfNextIndexGroup(self):
             if self.dataSource["type"] == "MySQL":
-                self.retrieveDataOfNextIndexGroupeFromMysql()
-                #data =
-                #print(str(data))
-                pass
+                self.indexGroupData = self.retrieveDataOfNextIndexGroupeFromMysql()
             if self.dataSource["type"] == "CSV":
-                #self.populateTableFromCSV()
-                pass
+                self.indexGroupData = self.retrieveDataOfNextIndexGroupeFromCSV()
 
     def retrieveDataOfNextIndexGroupeFromMysql(self):
         idxs = self.table.nextIndexGroup()
         data = []
         for idxGroup in idxs:
-            data.append(self.queryDataFromMysql(idxGroup, self.columns))
+            data.append(self.queryDataFromMysql(idxGroup))
+        return data
 
-    def queryDataFromMysql(self, idxs, columns):
+    def queryDataFromMysql(self, idxs):
         sqlInfo = self.dataSource["MySQL"]
-        query = self.createDataQueryForMySQL(sqlInfo, idxs, columns)
-        print(query)
+        query = self.createDataQueryForMySQL(sqlInfo, idxs, self.columns)
         db = pymysql.connect(sqlInfo["address"], sqlInfo["user"], sqlInfo["pwd"], sqlInfo["db"])
         cursor = db.cursor()
         try:
@@ -99,14 +107,12 @@ class AnalysisWrapper:
             print("[Error]: unable to fetch data from MySQL.")
         else:
             results = list(cursor.fetchall())
-            twoDresults = []
-            for result in results:
-                twoDresults.append(result[0])
-            print(str(twoDresults))
-            sys.exit()
-            return twoDresults
+            resultsTable = LookUpTable()
+            resultsTable.mapping = LookUpTable.generateLookUpTableMapFromList(0, self.columns)
+            for i in range(len(results)):
+                resultsTable.add(results[i])
+            return resultsTable.table
         db.close()
-
 
     def createDataQueryForMySQL(self, sqlInfo, idxs, columns):
         columnsConcat = ", ".join(columns)
@@ -117,14 +123,25 @@ class AnalysisWrapper:
                                                              idxsConcat)
         return query
 
-    def populateTableFromCSV(self, headers, rawData=[]):
-        with codecs.open(self.dataSource["csv"]["path"], "r", encoding='utf-8', errors='ignore') as inputFile:
-            for i in range(self.dataSource["csv"]["rowOffset"]):
-                next(inputFile)
-            data = csv.DictReader(inputFile, delimiter="\t")
-            for result in data:
-                row = []
-                for key in headers:
-                    row.append(result[key])
-                row = self.formatRow(row, headers)
-                self.table.add(row + rawData)
+    def retrieveDataOfNextIndexGroupeFromCSV(self):
+        idxs = self.table.nextIndexGroup()
+        data = []
+        for idxGroup in idxs:
+            data.append(self.queryDataFromCSV(idxGroup))
+        return data
+
+    def queryDataFromCSV(self, idxGroup):
+        csvInfo = self.dataSource["CSV"]
+        resultTable = LookUpTable()
+        resultTable.mapping = LookUpTable.generateLookUpTableMapFromList(0, self.columns)
+        for idx in idxGroup:
+            resultList = self.arrangeResultsinColumnOrder(self.dataInMemory[idx])
+            resultTable.add(resultList)
+        return resultTable.table
+
+    def arrangeResultsinColumnOrder(self, dictionary):
+        resultList = []
+        for col in self.columns:
+            resultList.append(dictionary[col])
+        return resultList
+

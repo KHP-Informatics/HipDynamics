@@ -4,7 +4,6 @@
     <list default="true" id="d36efcc3-eef1-440c-a97c-4482c5e5616f" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HipDynamics/analysis.py" afterPath="$PROJECT_DIR$/HipDynamics/analysis.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HipDynamics/staging.py" afterPath="$PROJECT_DIR$/HipDynamics/staging.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hipsciPreferences.json" afterPath="$PROJECT_DIR$/hipsciPreferences.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/phaseFocusPreferences.json" afterPath="$PROJECT_DIR$/phaseFocusPreferences.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/script.py" afterPath="$PROJECT_DIR$/script.py" />
     </list>
@@ -36,21 +35,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="script.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="script.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+            <state relative-caret-position="240">
+              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="analysis.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="analysis.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/HipDynamics/analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="341">
-              <caret line="92" column="19" selection-start-line="92" selection-start-column="19" selection-end-line="92" selection-end-column="19" />
+            <state relative-caret-position="1140">
+              <caret line="144" column="46" selection-start-line="144" selection-start-column="46" selection-end-line="144" selection-end-column="46" />
               <folding>
                 <element signature="e#20#45#0" expanded="true" />
               </folding>
@@ -61,8 +60,8 @@
       <file leaf-file-name="staging.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/HipDynamics/staging.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="361" column="19" selection-start-line="361" selection-start-column="19" selection-end-line="361" selection-end-column="19" />
+            <state relative-caret-position="429">
+              <caret line="503" column="29" selection-start-line="503" selection-start-column="29" selection-end-line="503" selection-end-column="29" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
               </folding>
@@ -83,8 +82,8 @@
       <file leaf-file-name="phaseFocusPreferences.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/phaseFocusPreferences.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="482">
-              <caret line="44" column="1" selection-start-line="44" selection-start-column="1" selection-end-line="44" selection-end-column="1" />
+            <state relative-caret-position="17">
+              <caret line="2" column="26" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -109,11 +108,11 @@
         <option value="$PROJECT_DIR$/analysis.py" />
         <option value="$PROJECT_DIR$/staging.py" />
         <option value="$PROJECT_DIR$/preferences.json" />
-        <option value="$PROJECT_DIR$/HipDynamics/staging.py" />
+        <option value="$PROJECT_DIR$/hipsciPreferences.json" />
         <option value="$PROJECT_DIR$/phaseFocusPreferences.json" />
+        <option value="$PROJECT_DIR$/HipDynamics/staging.py" />
         <option value="$PROJECT_DIR$/script.py" />
         <option value="$PROJECT_DIR$/HipDynamics/analysis.py" />
-        <option value="$PROJECT_DIR$/hipsciPreferences.json" />
       </list>
     </option>
   </component>
@@ -486,7 +485,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -737,34 +736,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/HipDynamics/staging.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="361" column="19" selection-start-line="361" selection-start-column="19" selection-end-line="361" selection-end-column="19" />
-          <folding>
-            <element signature="e#20#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/phaseFocusPreferences.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="482">
-          <caret line="44" column="1" selection-start-line="44" selection-start-column="1" selection-end-line="44" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/HipDynamics/analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="92" column="19" selection-start-line="92" selection-start-column="19" selection-end-line="92" selection-end-column="19" />
-          <folding>
-            <element signature="e#20#45#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hipsciPreferences.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="317">
@@ -773,11 +744,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/phaseFocusPreferences.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="2" column="26" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HipDynamics/staging.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="429">
+          <caret line="503" column="29" selection-start-line="503" selection-start-column="29" selection-end-line="503" selection-end-column="29" />
+          <folding>
+            <element signature="e#20#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+        <state relative-caret-position="240">
+          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HipDynamics/analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="144" column="46" selection-start-line="144" selection-start-column="46" selection-end-line="144" selection-end-column="46" />
+          <folding>
+            <element signature="e#20#45#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
