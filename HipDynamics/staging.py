@@ -22,6 +22,7 @@ class LookUpTable:
         self.indexGroupIteratorIdx = 0
         self.sourceFeaturePatternSelector = None
         self.sourceFeatureAccessInfo = None
+        self.metadataOfRetrievedIndexGroup = ""
 
     @property
     def invalidCharacters(self):
@@ -548,7 +549,7 @@ class LookUpTableWrapper:
 class TableSetup:
 
     def __init__(self, preferencePath):
-        self.assumptions = "[WARN] The following assumptions have been made from your preference file:\n"
+        self.assumptions = "[WARN] Assumptions have been made about your data based on the specified preferences:\n"
         self.hasAssumptions = False
         self.assumptionNo = 0
         self.hasIndex = True

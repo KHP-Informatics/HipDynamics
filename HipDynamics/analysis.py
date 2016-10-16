@@ -22,8 +22,10 @@ from HipDynamics.staging import *
 
 class Analysis:
 
-    def __init__(self):
-        pass
+    def __init__(self, data):
+        self.data = data
+
+
 
 
 class AnalysisWrapper:
@@ -33,6 +35,8 @@ class AnalysisWrapper:
             self.table = lookUpTable
             self.dataSource = self.table.sourceFeatureAccessInfo
             self.columns = self.retrieveDataColumns()
+            #self.dataInMemory = []
+            self.indexGroupData = []
         else:
             print("[ERROR] AnalysisWrapper only accepts tables of type {}".format(str(type(LookUpTable()))))
 
@@ -88,6 +92,7 @@ class AnalysisWrapper:
                 self.indexGroupData = self.retrieveDataOfNextIndexGroupeFromMysql()
             if self.dataSource["type"] == "CSV":
                 self.indexGroupData = self.retrieveDataOfNextIndexGroupeFromCSV()
+            print(self.formatMetadata(self.table.metadataOfRetrievedIndexGroup, len(self.indexGroupData)))
 
     def retrieveDataOfNextIndexGroupeFromMysql(self):
         idxs = self.table.nextIndexGroup()
@@ -135,13 +140,22 @@ class AnalysisWrapper:
         resultTable = LookUpTable()
         resultTable.mapping = LookUpTable.generateLookUpTableMapFromList(0, self.columns)
         for idx in idxGroup:
-            resultList = self.arrangeResultsinColumnOrder(self.dataInMemory[idx])
+            resultList = self.arrangeResultsInColumnOrder(self.dataInMemory[idx])
             resultTable.add(resultList)
         return resultTable.table
 
-    def arrangeResultsinColumnOrder(self, dictionary):
+    def arrangeResultsInColumnOrder(self, dictionary):
         resultList = []
         for col in self.columns:
             resultList.append(dictionary[col])
         return resultList
+
+    def formatMetadata(self, meta, noOfDataPoints = None):
+        msg = "[√] "
+        for m in meta:
+            keys = list(m.keys())
+            value = m[keys[0]]
+            msg += "{}: {} -> ".format(keys[0], value)
+        msg += "n = {}".format(str(noOfDataPoints))
+        return msg
 

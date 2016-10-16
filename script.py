@@ -4,7 +4,7 @@ from HipDynamics.analysis import *
 
 def main():
 
-    path = "/Users/Kerz/Documents/projects/HIPSCI/HipDynamicsPy/phaseFocusPreferences.json"
+    path = "/Users/Kerz/Documents/projects/HIPSCI/HipDynamicsPy/hipsciPreferences.json"
     tbs = TableSetup(path)
     tbs.setup()
     table = tbs.table
@@ -18,9 +18,7 @@ def main():
     analysisW = AnalysisWrapper(table)
     analysisW.retrieveDataOfNextIndexGroup()
     data = analysisW.indexGroupData
-    print(len(data))
-    for d in data:
-        print(str(d))
+
 
 main()
 
