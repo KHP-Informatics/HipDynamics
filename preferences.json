@@ -7,8 +7,8 @@
           "address": "localhost",
           "user": "hipsci",
           "pwd": "data",
-          "db": "example_data",
-          "table": "Example_Img",
+          "db": "hipsci_final",
+          "table": "ExpFeeder_1to16_Per_Image",
           "columnNames": ["ImageNumber", "Image_FileName_Phase"],
           "raw": []
         }
@@ -57,11 +57,24 @@
         }
       ],
       "invalidCharacters": ["-", "_"]
+    },
+    "analysis_source": {
+      "source": {
+        "type": "MySQL",
+        "MySQL": {
+          "address": "localhost",
+          "user": "hipsci",
+          "pwd": "data",
+          "db": "hipsci_final",
+          "table": "ExpFeeder_1to16_Per_Object",
+          "Index":"ImageNumber"
+        }
+      }
     }
   },
   "production": true,
   "timeDimensionColName": "Hour",
   "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
   "indexIteratorSelector": "Hour",
-  "sourceFeaturePatternSelector": "CellsDoubleFinal2"
+  "sourceFeaturePatternSelector": "CellsFinal"
 }

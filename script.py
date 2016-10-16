@@ -1,5 +1,7 @@
-import os
-from HipDynamics.staging import *
+#!/usr/bin/python3
+
+import pymysql as pymysql
+from HipDynamics.analysis import *
 
 def main():
 
@@ -8,8 +10,8 @@ def main():
     tbs.setup()
     table = tbs.table
 
-    for i in range(24):
-        idx = table.nextSourceIndexGroup()
-        print(str(idx))
+    #analysisW = AnalysisWrapper(table)
+    #analysisW.retrieveDataOfNextIndexGroup()
 
 main()
+

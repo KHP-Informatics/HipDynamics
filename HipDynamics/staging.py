@@ -16,6 +16,8 @@ class LookUpTable:
         self.TIMEKEY = "TIME_DIMENSION"
         self.timeDimensionKey = ""
         self.indexGroupIteratorIdx = 0
+        self.sourceFeaturePatternSelector = None
+        self.sourceFeatureAccessInfo = None
 
     @property
     def invalidCharacters(self):
@@ -81,6 +83,23 @@ class LookUpTable:
         self.indexGroupIteratorIdx = 0
         print("\nLookUpTable Iterator Key\n========================\n"\
               "[√] \'{}\' set as index group selector for analysis.".format(input))
+
+    @property
+    def sourceFeaturePatternSelector(self):
+        return self.__sourceFeaturePatternSelector
+
+    @sourceFeaturePatternSelector.setter
+    def sourceFeaturePatternSelector(self, input):
+        self.__sourceFeaturePatternSelector = input
+
+    @property
+    def sourceFeatureAccessInfo(self):
+        return self.__sourceFeatureAccessInfo
+
+    @sourceFeatureAccessInfo.setter
+    def sourceFeatureAccessInfo(self, input):
+        self.__sourceFeatureAccessInfo = input
+
 
     def mapTable(self):
         for i in range(self.mappingInputN):
@@ -223,12 +242,16 @@ class LookUpTable:
         return False
 
     def removeRowsFromTable(self, idxs):
+        print(len(idxs))
         for idx in idxs:
             self.removeRowFromTable(idx)
 
     def removeRowFromTable(self, idx):
         for key, values in self.table.items():
+            print(key + "  " + str(len(values)))
+            if (len(self.table[key])-1) >= idx:
                 self.table[key].pop(idx)
+        sys.exit()
 
     def assignTimeDimension(self, key):
         self.timeDimensionKey = key
@@ -286,14 +309,14 @@ class LookUpTable:
         for i in range(len(self.indexHierarchy)):
             print("[√] {} (n = {})".format(self.indexHierarchy[i], str(len(self.index[self.indexHierarchy[i]]))))
 
-    def nextSourceIndexGroup(self):
-        idxs = self.nextIndexGroup()
+    def nextIndexGroup(self):
+        idxs = self.nextTableIndexGroup()
         sourceIdxs = []
         for i in range(len(idxs)):
             sourceIdxs.append(self.table["Index"][idxs[i]])
         return sourceIdxs
 
-    def nextIndexGroup(self):
+    def nextTableIndexGroup(self):
         if len(self.index[self.indexGroupIteratorKey]) > self.indexGroupIteratorIdx:
             idxGroup = self.index[self.indexGroupIteratorKey][self.indexGroupIteratorIdx]
             self.indexGroupIteratorIdx = self.indexGroupIteratorIdx + 1
@@ -392,6 +415,7 @@ class LookUpTableWrapper:
             for row in results:
                 row = self.formatRow(list(row), headers)
                 self.table.add(list(row) + rawData)
+        db.close()
 
     def createQuery(self, headers):
         query = "Select "
@@ -493,6 +517,7 @@ class TableSetup:
         self.table.indexTable()
         self.table.indexGroupIteratorKey = self.pref["indexIteratorSelector"]
         self.table.sourceFeaturePatternSelector = self.pref["sourceFeaturePatternSelector"]
+        self.table.sourceFeatureAccessInfo = self.pref["dataSource"]["analysis_source"]["source"]
         if not self.pref["production"]:
             print(self.table)
         print("\n*** SETUP SUCCESSFUL ***\n")
@@ -529,6 +554,10 @@ class TableSetup:
         self.evalKeyCheck(keysTable, "map")
         self.evalKeyCheck(keysTable, "invalidCharacters")
         self.evalKeyCheck(keysTable, "translationMap")
+        self.evalKeyCheck(keysSetup, "analysis_source")
+        typeSourceKey = self.pref["dataSource"]["analysis_source"]["source"]["type"]
+        keysSource = list(self.pref["dataSource"]["analysis_source"]["source"].keys())
+        self.evalKeyCheck(keysSource, typeSourceKey)
         print("PASS.")
 
     def setupLookUpTable(self, lookUpTableSelector):
