@@ -18,6 +18,7 @@ class LookUpTable:
         self.invalidCharacters =[]
         self.TIMEKEY = "TIME_DIMENSION"
         self.timeDimensionKey = ""
+        self.indexHierarchy = []
         self.indexGroupIteratorIdx = 0
         self.sourceFeaturePatternSelector = None
         self.sourceFeatureAccessInfo = None
@@ -49,7 +50,7 @@ class LookUpTable:
             for indexKey in input:
                 if not TableSetup.checkForKey(0, keys, indexKey):
                     print("[ERROR] The index key \'{}\' was not found in this table.\n" \
-                          "        Please double check your index hierarchy.".format(indexKey))
+                          "        Please double check your indexHierarchy keys.".format(indexKey))
                     sys.exit()
             for i in range(len(input)):
                 if input[i] == self.timeDimensionKey and self.timeDimensionKey != "":
@@ -82,12 +83,26 @@ class LookUpTable:
 
     @indexGroupIteratorKey.setter
     def indexGroupIteratorKey(self, input):
+        if len(self.indexHierarchy) == 0:
+            print("[ERROR] The indexHierarchy must be set before setting the indexGroupIteratorKey.")
+            sys.exit()
         if input == self.timeDimensionKey:
             input = self.TIMEKEY
         self.__indexGroupIteratorKey = input
         self.indexGroupIteratorIdx = 0
         print("\nLookUpTable Iterator Key\n========================\n"\
               "[√] \'{}\' set as index group selector for analysis.".format(input))
+        self.indexGroupIteratorKeyIdxs = []
+        for i in range(len(self.indexHierarchy)):
+            if self.indexHierarchy[i] == self.__indexGroupIteratorKey:
+                self.indexGroupIteratorKeyIdxs.append(i)
+        if self.indexGroupIteratorKeyIdxs[0] < (len(self.indexHierarchy)-1):
+            self.indexGroupIteratorKeyIdxs.append(self.indexGroupIteratorKeyIdxs[0]+1)
+        else:
+            print("[WARN] The selected indexGroupIteratorKey (indexIteratorSelector) is not followed\n"\
+                  "       by another dimension. The latter will result in a one-dimensional index iteration\n"\
+                  "       which may affect your analysis. For more information conult the documentation.")
+
 
     @property
     def sourceFeaturePatternSelector(self):
@@ -272,6 +287,7 @@ class LookUpTable:
         self.setupIndex()
         idxs = range(len(self.table[self.indexHierarchy[0]]))
         self.indexNextKey(idxs, self.indexHierarchy)
+        self.compressIndex()
         self.indexSummary()
         print("Finished indexing.")
 
@@ -316,19 +332,55 @@ class LookUpTable:
         for i in range(len(self.indexHierarchy)):
             print("[√] {} (n = {})".format(self.indexHierarchy[i], str(len(self.index[self.indexHierarchy[i]]))))
 
+    def compressIndex(self):
+        pass
+
     def nextIndexGroup(self):
-        idxs = self.nextTableIndexGroup()
-        sourceIdxs = []
-        for i in range(len(idxs)):
-            sourceIdxs.append(self.table["Index"][idxs[i]])
+        idxs = self.nextLookUpTableIndexGroup()
+        self.metadataOfRetrievedIndexGroup = self.gatherMetaDataOfUpstreamDimensions(idxs[0])
+        if len(self.indexGroupIteratorKeyIdxs) == 2:
+            complexDimIdxs = self.retrieveMatchingIndexGroupsOfDownstreamDimension(idxs)
+            sourceIdxs = []
+            for indexGroup in complexDimIdxs:
+                sourceIdxs.append(self.translateIndeciesToSourceIndecies(indexGroup))
+            return sourceIdxs
+        else:
+            sourceIdxs = self.translateIndeciesToSourceIndecies(idxs)
         return sourceIdxs
 
-    def nextTableIndexGroup(self):
+    def nextLookUpTableIndexGroup(self):
         if len(self.index[self.indexGroupIteratorKey]) > self.indexGroupIteratorIdx:
             idxGroup = self.index[self.indexGroupIteratorKey][self.indexGroupIteratorIdx]
             self.indexGroupIteratorIdx = self.indexGroupIteratorIdx + 1
             return idxGroup
         return []
+
+    def gatherMetaDataOfUpstreamDimensions(self, idx):
+        meta = []
+        for i in range((self.indexGroupIteratorKeyIdxs[0]+1)):
+            meta.append({self.indexHierarchy[i]: self.table[self.indexHierarchy[i]][idx]})
+        return meta
+
+    def retrieveMatchingIndexGroupsOfDownstreamDimension(self, idxs):
+        downstreamIndexKey = self.indexHierarchy[self.indexGroupIteratorKeyIdxs[1]]
+        twoDimList = []
+        for indexGroup in self.index[downstreamIndexKey]:
+            if self.isIndexGroupInIdxsList(indexGroup, idxs):
+                twoDimList.append(indexGroup)
+        return twoDimList
+
+    def isIndexGroupInIdxsList(self, indexGroup, idxsList):
+        for index in indexGroup:
+            for idx in idxsList:
+                if index == idx:
+                    return True
+        return False
+
+    def translateIndeciesToSourceIndecies(self, idxs):
+        sourceIdxs = []
+        for i in range(len(idxs)):
+            sourceIdxs.append(self.table["Index"][idxs[i]])
+        return sourceIdxs
 
     def __str__(self):
         if(self.mappingInputN != 0):

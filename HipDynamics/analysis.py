@@ -32,29 +32,21 @@ class AnalysisWrapper:
         if type(LookUpTable()) == type(lookUpTable):
             self.table = lookUpTable
             self.dataSource = self.table.sourceFeatureAccessInfo
+            self.columns = self.retrieveDataColumns()
         else:
             print("[ERROR] AnalysisWrapper only accepts tables of type {}".format(str(type(LookUpTable()))))
 
-
-    def retrieveDataOfNextIndexGroup(self):
+    def retrieveDataColumns(self):
         if self.dataSource != None and self.table.sourceFeaturePatternSelector != None:
             if self.dataSource["type"] == "MySQL":
-                print("Mysql")
-                self.retrieveDataOfNextIndexGroupeFromMysql()
-                pass
+                return self.querySelectiveColumnsFromMysql()
             if self.dataSource["type"] == "CSV":
-                print("CSV")
-                #self.populateTableFromCSV()
+                #return self.querySelectiveColumnsFromCSV()
                 pass
         else:
             print("[ERROR] AnalysisWrapper requires a table sourceFeatureAccessInfo.\n" \
                   "        For more information, consult the documentation.")
-
-
-    def retrieveDataOfNextIndexGroupeFromMysql(self):
-        idxs = self.table.nextIndexGroup()
-        columns = self.querySelectiveColumnsFromMysql()
-        data = self.queryDataFromMysql(idxs, columns)
+            sys.exit()
 
     def querySelectiveColumnsFromMysql(self):
         sqlInfo = self.dataSource["MySQL"]
@@ -79,10 +71,42 @@ class AnalysisWrapper:
                                                                         whereSelector)
         return query
 
+    def retrieveDataOfNextIndexGroup(self):
+            if self.dataSource["type"] == "MySQL":
+                self.retrieveDataOfNextIndexGroupeFromMysql()
+                #data =
+                #print(str(data))
+                pass
+            if self.dataSource["type"] == "CSV":
+                #self.populateTableFromCSV()
+                pass
+
+    def retrieveDataOfNextIndexGroupeFromMysql(self):
+        idxs = self.table.nextIndexGroup()
+        data = []
+        for idxGroup in idxs:
+            data.append(self.queryDataFromMysql(idxGroup, self.columns))
+
     def queryDataFromMysql(self, idxs, columns):
         sqlInfo = self.dataSource["MySQL"]
         query = self.createDataQueryForMySQL(sqlInfo, idxs, columns)
         print(query)
+        db = pymysql.connect(sqlInfo["address"], sqlInfo["user"], sqlInfo["pwd"], sqlInfo["db"])
+        cursor = db.cursor()
+        try:
+            cursor.execute(query)
+        except:
+            print("[Error]: unable to fetch data from MySQL.")
+        else:
+            results = list(cursor.fetchall())
+            twoDresults = []
+            for result in results:
+                twoDresults.append(result[0])
+            print(str(twoDresults))
+            sys.exit()
+            return twoDresults
+        db.close()
+
 
     def createDataQueryForMySQL(self, sqlInfo, idxs, columns):
         columnsConcat = ", ".join(columns)
@@ -92,9 +116,6 @@ class AnalysisWrapper:
                                                              sqlInfo["Index"],
                                                              idxsConcat)
         return query
-
-
-
 
     def populateTableFromCSV(self, headers, rawData=[]):
         with codecs.open(self.dataSource["csv"]["path"], "r", encoding='utf-8', errors='ignore') as inputFile:

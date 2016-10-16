@@ -4,14 +4,19 @@ from HipDynamics.analysis import *
 
 def main():
 
-    path = "/Users/Kerz/Documents/projects/HIPSCI/HipDynamicsPy/phaseFocusPreferences.json"
+    path = "/Users/Kerz/Documents/projects/HIPSCI/HipDynamicsPy/hipsciPreferences.json"
     tbs = TableSetup(path)
     tbs.setup()
     table = tbs.table
     index = table.index
 
-    #analysisW = AnalysisWrapper(table)
-    #analysisW.retrieveDataOfNextIndexGroup()
+    #for i in range(24):
+    #    idxGroup = table.nextIndexGroup()
+    #    meta = table.metadataOfRetrievedIndexGroup
+    #    print(str(meta) + ": " + str(idxGroup))
+
+    analysisW = AnalysisWrapper(table)
+    analysisW.retrieveDataOfNextIndexGroup()
 
 main()
 

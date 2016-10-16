@@ -37,9 +37,9 @@
       }
     }
   },
-  "production": false,
+  "production": true,
   "timeDimensionColName": "Frame",
-  "indexHierarchy": ["Lineage", "Frame"],
-  "indexIteratorSelector": "Frame",
+  "indexHierarchy": ["Lineage", "TrackingID", "Frame"],
+  "indexIteratorSelector": "TrackingID",
   "sourceFeaturePatternSelector": ""
 }

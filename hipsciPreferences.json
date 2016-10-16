@@ -67,15 +67,15 @@
           "user": "hipsci",
           "pwd": "data",
           "db": "hipsci_final",
-          "table": "ExpFeeder_1to16_Per_Object",
+          "table": "ExpFeeder_1to16_Per_Image",
           "Index":"ImageNumber"
         }
       }
     }
   },
-  "production": false,
+  "production": true,
   "timeDimensionColName": "Hour",
   "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
-  "indexIteratorSelector": "Hour",
+  "indexIteratorSelector": "FN",
   "sourceFeaturePatternSelector": "CellsFinal"
 }
