@@ -72,7 +72,7 @@
       }
     }
   },
-  "production": true,
+  "production": false,
   "timeDimensionColName": "Hour",
   "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
   "indexIteratorSelector": "Hour",

@@ -242,22 +242,17 @@ class LookUpTable:
         return False
 
     def removeRowsFromTable(self, idxs):
-        print(len(idxs))
         for idx in idxs:
             self.removeRowFromTable(idx)
 
     def removeRowFromTable(self, idx):
         for key, values in self.table.items():
-            print(key + "  " + str(len(values)))
             if (len(self.table[key])-1) >= idx:
                 self.table[key].pop(idx)
-        sys.exit()
 
     def assignTimeDimension(self, key):
         self.timeDimensionKey = key
-        timeUnits = list(numpy.unique(self.table[key]))
-        n = len(self.table[key])
-        timeCol = timeUnits * int((n/len(timeUnits)))
+        timeCol = self.table[key]
         self.table[self.TIMEKEY] = timeCol
 
     def exitEvalMethod(self, bool, msg):
