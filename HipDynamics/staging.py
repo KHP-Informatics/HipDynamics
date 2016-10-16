@@ -11,6 +11,7 @@ import pymysql as pymysql
 class LookUpTable:
     def __init__(self):
         self.table = {}
+        self.requiresIndexAssignment = False
         self.index = {}
         self.mapping = []
         self.mappingInputN = 0
@@ -61,8 +62,10 @@ class LookUpTable:
 
     @mapping.setter
     def mapping(self, mapInstructions):
+        if self.requiresIndexAssignment:
+            mapInstructions.append({"Index": []})
         self.__mapping = mapInstructions
-        self.mappingInputN = len(mapInstructions)
+        self.mappingInputN = len(self.__mapping)
         self.mapTable()
 
     @property
@@ -102,7 +105,6 @@ class LookUpTable:
     def sourceFeatureAccessInfo(self, input):
         self.__sourceFeatureAccessInfo = input
 
-
     def mapTable(self):
         for i in range(self.mappingInputN):
             d = self.mapping[i]
@@ -110,6 +112,8 @@ class LookUpTable:
                 self.table[key] = []
 
     def add(self, mappedInput):
+        if self.requiresIndexAssignment:
+            mappedInput.append(len(self.table["Index"]))
         if self.mappingInputN != 0 and len(mappedInput) == self.mappingInputN:
             for i in range(self.mappingInputN):
                 self.reduce(mappedInput[i], i)
@@ -583,6 +587,8 @@ class TableSetup:
 
     def setupLookUpTable(self, lookUpTableSelector):
         table = LookUpTable()
+        if lookUpTableSelector == "primary_lookUpTable" and not self.hasIndex:
+            table.requiresIndexAssignment = True
         table.mapping = self.pref["dataSource"][lookUpTableSelector]["map"]
         table.invalidCharacters = self.pref["dataSource"][lookUpTableSelector]["invalidCharacters"]
         sourceType = self.pref["dataSource"][lookUpTableSelector]["source"]["type"]
