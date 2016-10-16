@@ -31,13 +31,13 @@
       "source": {
         "type": "CSV",
         "CSV":{
-          "path":"/Users/Kerz/Desktop/",
-          "fileName": "2014-04-24_example_plate_results.txt",
+          "path":"/Users/Kerz/Documents/projects/HIPSCI/Plate_Results",
+          "fileName": "",
           "rowOffset": 8,
           "columnNames":["Cell Type", "Concentration", "Row", "Column"],
-          "isDirectory": false,
+          "isDirectory": true,
           "fileNames":[],
-          "fileNameContains": "",
+          "fileNameContains": "HipSci",
           "raw": ["fileName"]
         }
       },
@@ -46,7 +46,7 @@
           {"FN": []},
           {"Well": []},
           {
-              "Experiment": [11, 18],
+              "Experiment": [18, 23],
               "ExpDate": [0, 10]
           }
       ],

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import sys
 import csv
 import json
@@ -252,7 +253,7 @@ class LookUpTable:
 
     def assignTimeDimension(self, key):
         self.timeDimensionKey = key
-        timeCol = self.table[key]
+        timeCol = self.table[key].copy()
         self.table[self.TIMEKEY] = timeCol
 
     def exitEvalMethod(self, bool, msg):
@@ -282,6 +283,7 @@ class LookUpTable:
 
     def indexNextKey(self, idxs, keys, keyIndex = 0):
         indexKey = keys[keyIndex]
+        print(indexKey)
         values = self.getValuesAtIdxsWithKey(idxs, indexKey)
         uniqueValues = numpy.unique(values)
         for val in uniqueValues:
@@ -507,7 +509,10 @@ class TableSetup:
             annoTable = self.setupLookUpTable("annotation_lookUpTable")
             self.table.annotateWith(annoTable)
         self.table.assignTimeDimension(self.pref["timeDimensionColName"])
+
         self.table.cleanMissingness()
+        if not self.pref["production"]:
+            print(self.table)
         self.table.indexHierarchy = self.pref["indexHierarchy"]
         self.table.indexTable()
         self.table.indexGroupIteratorKey = self.pref["indexIteratorSelector"]
@@ -579,10 +584,18 @@ class TableSetup:
     def populateTableHelper(self, wrapper, sourceSpecs, sourceType):
         if sourceType == "CSV":
             if sourceSpecs["isDirectory"]:
-                pass # need to add multiple files capability here
+                files = os.listdir(sourceSpecs["path"])
+                filteredFiles = self.filterForStringsContainingX(files, sourceSpecs["fileNameContains"])
+                sourceSpecs["fileNames"] = filteredFiles
+                for fileName in sourceSpecs["fileNames"]:
+                    sourceSpecs["fileName"] = fileName
+                    raw = self.evalRaw(sourceSpecs)
+                    wrapper.setDataSourceToCSV((sourceSpecs["path"] + "/" + sourceSpecs["fileName"]),
+                                               sourceSpecs["rowOffset"])
+                    wrapper.populateTable(sourceSpecs["columnNames"], raw)
             else:
                 raw = self.evalRaw(sourceSpecs)
-                wrapper.setDataSourceToCSV((sourceSpecs["path"] + sourceSpecs["fileName"]), sourceSpecs["rowOffset"])
+                wrapper.setDataSourceToCSV((sourceSpecs["path"] + "/" + sourceSpecs["fileName"]), sourceSpecs["rowOffset"])
                 wrapper.populateTable(sourceSpecs["columnNames"], raw)
         if sourceType == "MySQL":
             wrapper.setDataSourceToMySQL(sourceSpecs["address"],
@@ -596,6 +609,16 @@ class TableSetup:
         if self.checkForKey(keys, sourceSpecs["raw"][0]) and len(sourceSpecs["raw"]) == 1:
             return [sourceSpecs[sourceSpecs["raw"][0]]]
         return sourceSpecs["raw"]
+
+    def filterForStringsContainingX(self, strings, stringX):
+        if stringX != "" or stringX != None:
+            filtered = []
+            for string in strings:
+                if stringX in string:
+                    filtered.append(string)
+            return filtered
+        return strings
+
 
     def evalKeyCheck(self, arr, key):
         check = self.checkForKey(arr, key)
