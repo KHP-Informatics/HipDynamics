@@ -14,7 +14,7 @@ def startUpInfo():
 def main():
 
     startUpInfo()
-    path = "/Users/Kerz/Documents/projects/HIPSCI/HipDynamicsPy/phaseFocusPreferences.json"
+    path = ""
     if len(sys.argv) > 1:
         path = sys.argv[1]
     if path == "":
