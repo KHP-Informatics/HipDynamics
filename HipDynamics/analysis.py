@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import datetime
 from scipy import stats
 from HipDynamics.staging import *
 
@@ -50,12 +51,26 @@ class Analysis:
         return self.__resultData
 
     def runDimensionalityReduction(self):
+        if len(self.data) < 2:
+            print("[WARN] dimensionalityReduction aborted. One or no data point submitted.\n"\
+                  "       It cannot be collapsed further.")
+            return []
+        self.setMissingValuesToZero()
         if self.pref["transformToLogScale"]:
             self.transformDataToLogScale()
         medianData = self.computeMedians()
         inputData = self.collapseIntoRegressionTable(medianData)
         self.resultData = self.applyLinearRegression(inputData)
         return self.resultData
+
+    def setMissingValuesToZero(self):
+        for i in range(len(self.data)):
+            keys = list(self.data[i].keys())
+            for key in keys:
+                vals = self.data[i][key]
+                for j in range(len(vals)):
+                    if vals[j] == "": vals[j] = 0
+                self.data[i][key] = vals
 
     def transformDataToLogScale(self):
         for i in range(len(self.data)):
@@ -96,9 +111,9 @@ class Analysis:
             y = regressData[key]
             x = range(len(y))
             if len(x) > 1:
-                slope, intercept, rValue, pValue, stdErr = stats.linregress(x, y)
+                gradient, intercept, rValue, pValue, stdErr = stats.linregress(x, y)
                 result.append({
-                    "slope": slope,
+                    "gradient": gradient,
                     "intercept": intercept,
                     "rValue": rValue,
                     "pValue": pValue,
@@ -122,6 +137,8 @@ class AnalysisWrapper:
             self.dataSource = self.table.sourceFeatureAccessInfo
             self.columns = self.retrieveDataColumns()
             self.indexGroupData = []
+            self.outputResultHeader = []
+            self.outputTable = []
         else:
             print("[ERROR] AnalysisWrapper only accepts tables of type {}".format(str(type(LookUpTable()))))
 
@@ -255,12 +272,75 @@ class AnalysisWrapper:
         return msg
 
     def runAnalysis(self, analysisPreferences):
+        print("\nHipDynamics Analysis\n====================\n")
         analysis = Analysis(analysisPreferences)
+        result = self.nextAnalysisRun(analysis)
+        while result != None:
+            if result != []:
+                row = self.formatOutputRow(result, analysisPreferences["regressionMeasures"])
+                self.addRowToOutputTable(row, analysisPreferences["regressionMeasures"])
+            result = self.nextAnalysisRun(analysis)
+        print("\n*** ANALYSIS SUCCESSFUL ***\n")
 
+    def nextAnalysisRun(self, analysis):
         data = self.retrieveDataOfNextIndexGroup()
+        if len(data) == 0: return None
         analysis.data = data
         result = analysis.runDimensionalityReduction()
+        return result
 
+    def formatOutputRow(self, result, measures):
+        if len(self.outputResultHeader) == 0:
+            self.outputResultHeader = list(result.keys())
+        metaVal = self.formatMetadataOutputRow()
+        resultVal = self.formatResultOutputRow(result, measures)
+        return metaVal + resultVal
+
+    def formatMetadataOutputRow(self):
+        row = []
+        for d in self.table.metadataOfRetrievedIndexGroup:
+            keys = list(d.keys())
+            row.append(d[keys[0]])
+        return row
+
+    def formatResultOutputRow(self, result, measures):
+        row = []
+        for measure in measures:
+            for key in self.outputResultHeader:
+                row.append(result[key][0][measure])
+        return row
+
+    def addRowToOutputTable(self, row, measures):
+        if len(self.outputTable) == 0:
+            header = self.getHeader(measures)
+            self.outputTable.append(header)
+        self.outputTable.append(row)
+
+    def getHeader(self, measures):
+        meta = self.getMetadataHeader()
+        result = self.getResultHeader(measures)
+        return meta + result
+
+    def getMetadataHeader(self):
+        header = []
+        for d in self.table.metadataOfRetrievedIndexGroup:
+            keys = list(d.keys())
+            header.append("{}-{}".format("index", keys[0]))
+        return header
+
+    def getResultHeader(self, measures):
+        row = []
+        for measure in measures:
+            for key in self.outputResultHeader:
+                row.append("{}-{}".format(measure, key))
+        return row
+
+    def writeOutputToCSV(self, outputPath):
+        path = "{}/HipDynamics {}.csv".format(outputPath, datetime.datetime.now().strftime('%d-%m-%Y %H-%M'))
+        with open(path, 'w', newline='') as csvfile:
+            outputWriter = csv.writer(csvfile, delimiter=',')
+            for row in self.outputTable:
+                outputWriter.writerow(row)
 
     def __str__(self):
         pass

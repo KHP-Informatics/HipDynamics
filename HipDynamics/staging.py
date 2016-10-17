@@ -338,7 +338,7 @@ class LookUpTable:
 
     def nextIndexGroup(self):
         idxs = self.nextLookUpTableIndexGroup()
-        self.metadataOfRetrievedIndexGroup = self.gatherMetaDataOfUpstreamDimensions(idxs[0])
+        self.metadataOfRetrievedIndexGroup = self.gatherMetaDataOfUpstreamDimensions(idxs)
         if len(self.indexGroupIteratorKeyIdxs) == 2:
             complexDimIdxs = self.retrieveMatchingIndexGroupsOfDownstreamDimension(idxs)
             sourceIdxs = []
@@ -356,8 +356,10 @@ class LookUpTable:
             return idxGroup
         return []
 
-    def gatherMetaDataOfUpstreamDimensions(self, idx):
+    def gatherMetaDataOfUpstreamDimensions(self, idxs):
         meta = []
+        if len(idxs) == 0: return meta
+        idx = idxs[0]
         for i in range((self.indexGroupIteratorKeyIdxs[0]+1)):
             meta.append({self.indexHierarchy[i]: self.table[self.indexHierarchy[i]][idx]})
         return meta

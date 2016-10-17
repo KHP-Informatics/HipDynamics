@@ -5,7 +5,7 @@
         "type": "CSV",
         "CSV":{
           "path":"/Users/Kerz/Desktop",
-          "fileName": "ExampleFeatureTable_MaxKerz-KCL.csv",
+          "fileName": "ExampleFeatureTable_MaxKerz-KCL.txt",
           "delimiter": "\t",
           "rowOffset": 0,
           "columnNames":["Frame", "Lineage ID", "Tracking ID"],
@@ -43,9 +43,8 @@
   "indexIteratorSelector": "TrackingID",
   "sourceFeaturePatternSelector": "",
   "analysis": {
-    "transformToLogScale": true
-  }
-  "output":{
-    "path":"/Users/Kerz/Desktop"
+    "transformToLogScale": true,
+    "regressionMeasures": ["gradient", "intercept", "rValue", "pValue", "stdErr"],
+    "outputPath":"/Users/Kerz/Desktop"
   }
 }

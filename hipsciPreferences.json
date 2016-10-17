@@ -76,9 +76,11 @@
   "production": true,
   "timeDimensionColName": "Hour",
   "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
-  "indexIteratorSelector": "Hour",
+  "indexIteratorSelector": "FN",
   "sourceFeaturePatternSelector": "CellsFinal",
   "analysis": {
-    "transformToLogScale": true
+    "transformToLogScale": true,
+    "regressionMeasures": ["gradient", "intercept", "rValue", "pValue", "stdErr"],
+    "outputPath":"/Users/Kerz/Desktop"
   }
 }
