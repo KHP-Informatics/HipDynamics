@@ -41,5 +41,11 @@
   "timeDimensionColName": "Frame",
   "indexHierarchy": ["Lineage", "TrackingID", "Frame"],
   "indexIteratorSelector": "TrackingID",
-  "sourceFeaturePatternSelector": ""
+  "sourceFeaturePatternSelector": "",
+  "analysis": {
+    "transformToLogScale": true
+  }
+  "output":{
+    "path":"/Users/Kerz/Desktop"
+  }
 }

@@ -102,7 +102,7 @@ class LookUpTable:
         else:
             print("[WARN] The selected indexGroupIteratorKey (indexIteratorSelector) is not followed\n"\
                   "       by another dimension. The latter will result in a one-dimensional index iteration\n"\
-                  "       which may affect your analysis. For more information conult the documentation.")
+                  "       which may affect your analysis. For more information consult the documentation.")
 
 
     @property
@@ -574,6 +574,14 @@ class TableSetup:
     def table(self, inputTable):
         self.__table = inputTable
 
+    @property
+    def analysisPreferences(self):
+        return self.__pref["analysis"]
+
+    @analysisPreferences.setter
+    def analysisPreferences(self, input):
+        self.__pref["analysis"] = input
+
     def setup(self):
         self.checkPreferences()
         self.table = self.setupLookUpTable("primary_lookUpTable")
@@ -600,6 +608,7 @@ class TableSetup:
         self.evalKeyCheck(keys, "indexHierarchy")
         self.evalKeyCheck(keys, "indexIteratorSelector")
         self.evalKeyCheck(keys, "sourceFeaturePatternSelector")
+        self.evalKeyCheck(keys, "analysis")
         keysSetup = list(self.pref["dataSource"].keys())
         self.evalKeyCheck(keysSetup, "primary_lookUpTable")
         keysTable = list(self.pref["dataSource"]["primary_lookUpTable"].keys())

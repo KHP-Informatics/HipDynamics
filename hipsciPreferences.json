@@ -76,6 +76,9 @@
   "production": true,
   "timeDimensionColName": "Hour",
   "indexHierarchy": ["Experiment", "Line", "FN", "Hour"],
-  "indexIteratorSelector": "FN",
-  "sourceFeaturePatternSelector": "CellsFinal"
+  "indexIteratorSelector": "Hour",
+  "sourceFeaturePatternSelector": "CellsFinal",
+  "analysis": {
+    "transformToLogScale": true
+  }
 }
