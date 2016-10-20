@@ -1,25 +1,9 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
 import datetime
 from scipy import stats
 from HipDynamics.staging import *
-
-# For experiment
-#   For line
-#       Select for [FN] or Well
-#       Get 'CellsDoubleFinal2' fields *** Start from here ***
-#
-#       Sort according to hours
-#       1. Heatmapping
-#           1.1 Binning in 20 bins
-#           1.2 Plot heatmap
-#       2. Linear Regression
-#           2.1 Transform onto log scale
-#           2.2 Get median per hour
-#           2.3 Fit linear regression
-#           2.4 Get gradient and y-intercept
-#           2.5 Plot
-#   3. Output csv per experiment
 
 class Analysis:
 
@@ -336,7 +320,7 @@ class AnalysisWrapper:
         return row
 
     def writeOutputToCSV(self, outputPath):
-        path = "{}/HipDynamics {}.csv".format(outputPath, datetime.datetime.now().strftime('%d-%m-%Y %H-%M'))
+        path = "{}/HipDynamics_{}.csv".format(outputPath, datetime.datetime.now().strftime('%d-%m-%Y_%H-%M'))
         with open(path, 'w', newline='') as csvfile:
             outputWriter = csv.writer(csvfile, delimiter=',')
             for row in self.outputTable:

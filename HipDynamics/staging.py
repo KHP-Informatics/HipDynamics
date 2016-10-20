@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
 import os
@@ -497,11 +498,16 @@ class LookUpTableWrapper:
         with codecs.open(self.dataSource["csv"]["path"], "r", encoding='utf-8', errors='ignore') as inputFile:
             for i in range(self.dataSource["csv"]["rowOffset"]):
                 next(inputFile)
-            data = csv.DictReader(inputFile, delimiter=delimiter)
+            data = csv.DictReader(inputFile, delimiter=str(delimiter))
             for result in data:
                 row = []
                 for key in headers:
-                    row.append(result[key])
+                    try:
+                        row.append(result[key])
+                    except KeyError:
+                        print("[ERROR] The key '{}' could not be exracted from" \
+                              " the specified file: {}.".format(key, self.dataSource["csv"]["path"]))
+                        sys.exit()
                 row = self.formatRow(row, headers)
                 self.table.add(row + rawData)
             inputFile.close()
