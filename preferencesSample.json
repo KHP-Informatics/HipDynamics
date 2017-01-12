@@ -1,6 +1,7 @@
 {
+  "production": true,
   "dataSource":{
-      "primary_lookUpTable":{
+    "primary_lookUpTable":{
       "source": {
         "type": "CSV",
         "CSV":{
@@ -66,7 +67,6 @@
       }
     }
   },
-  "production": true,
   "timeDimensionColName": "Frame",
   "indexHierarchy": ["Lineage", "TrackingID", "Frame"],
   "indexIteratorSelector": "TrackingID",

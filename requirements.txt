@@ -1,3 +1,6 @@
-numpy==1.11.2
+numpy==1.10.0.post2
 PyMySQL==0.7.9
+python-dateutil==2.4.2
+python-engineio==1.0.3
+python-socketio==1.6.0
 scipy==0.18.1

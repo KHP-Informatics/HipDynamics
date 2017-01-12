@@ -9,7 +9,7 @@ def startUpInfo():
           "|  _  | | |_) | |_| | |_| | | | | (_| | | | | | | | (__\__ \ \n"\
           "|_| |_|_| .__/|____/ \__, |_| |_|\__,_|_| |_| |_|_|\___|___/\n"\
           "        |_|          |___/\n\n"\
-          "Version: 2.0; Author: Maximilian Kerz (www.maximiliankerz.com)"
+          "Version: 1.0; Author: Maximilian Kerz (www.maximiliankerz.com)"
     print(msg)
 
 def main():
