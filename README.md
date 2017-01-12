@@ -90,10 +90,10 @@ The `map` property is dynamic and depends on the columns you've specified in the
 
 Example:
 Given the following source specification:
->```"columnName": ["Latitude", "Longitude"], "raw": ["London_01/01/1970.csv"]```
+>```"columnName": ["Latitude", "Longitude"], "raw": ["London_01-01-1970.csv"]```
 
 The data vector that will be added to the specified table will look like this:
->```["51.5074° N", "0.1278° W", "London_01/01/1970.csv"]```
+>```["51.5074° N", "0.1278° W", "London_01-01-1970.csv"]```
 
 The map property allows you to assign your own choice of column names:
 >```"map": [ {"Lat": []}, {"Lon": []}, {"FileName": []} ]```
@@ -102,7 +102,7 @@ Resulting in the follwing table entry:
 
 > | Lat | Lon | Filename |
 > |----------|---------|------------|
-> | 51.5074° N | 0.1278° W | London_01/01/1970.csv |
+> | 51.5074° N | 0.1278° W | London_01-01-1970.csv |
 
 However, the map property is more powerful than that. It allows you to extract metadata from strings and assign those to new columns.
 > ```"map": [ {"Lat": []}, {"Lon": []}, {"City": [0,5], "Date": [7, 16]} ]```
@@ -111,7 +111,7 @@ The slightly altered map property would result in the following entry of a chose
 
 > | Lat | Lon | City | Date |
 > |----------|---------|------------|
-> | 51.5074° N | 0.1278° W | London | 01/01/1970 |
+> | 51.5074° N | 0.1278° W | London | 01-01-1970 |
 
 
 #### Configuring the `translationMap` property
