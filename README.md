@@ -113,7 +113,7 @@ However, the map property is more powerful than that. It allows you to extract m
 The slightly altered map property would result in the following entry of a chosen table (based on the input of step 2):
 
 > | Lat | Lon | City | Date |
-> |----------|---------|------------|
+> |-----|-----|------|------|
 > | 51.5074° N | 0.1278° W | London | 01-01-1970 |
 
 
