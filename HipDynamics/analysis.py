@@ -115,6 +115,14 @@ class Analysis:
 
 class AnalysisWrapper:
 
+    @property
+    def outputTable(self):
+        return self.__outputTable
+
+    @outputTable.setter
+    def outputTable(self, t):
+        self.__outputTable = t
+
     def __init__(self, lookUpTable):
         if type(LookUpTable()) == type(lookUpTable):
             self.table = lookUpTable
