@@ -4,3 +4,4 @@ python-dateutil==2.4.2
 python-engineio==1.0.3
 python-socketio==1.6.0
 scipy==0.18.1
+matplotlib==2.0.0
