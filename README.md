@@ -1,7 +1,8 @@
 <img src="HDOpenS-Logo.png" width="200">
 
-#HipDynamics
- 
+# HipDynamics
+[![DOI](https://zenodo.org/badge/78788662.svg)](https://zenodo.org/badge/latestdoi/78788662)
+
 HipDynamics is a data analytics middleware that allows you to slice multi-dimensional data sets according to a pre-defined context. It is completely data type agnostic, supports database access and multi data set mergers. HipDynamics is designed to abstract away many of the tedious and repetitive data formating tasks required before one is actually able to apply an analysis.
 
 
